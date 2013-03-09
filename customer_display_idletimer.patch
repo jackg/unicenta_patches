@@ -1,0 +1,66 @@
+diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java unicenta_302_source/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java
+--- unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java	2012-05-19 07:04:48.000000000 +0100
++++ unicenta_302_source/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java	2013-03-09 02:38:57.000000000 +0000
+@@ -21,6 +21,11 @@
+ 
+ import java.awt.event.ActionEvent;
+ import java.awt.event.ActionListener;
++import java.text.DateFormat;
++import java.text.SimpleDateFormat;
++import java.util.Calendar;
++import java.util.Date;
++import javax.swing.Timer;
+ 
+ /**
+  *
+@@ -37,6 +42,7 @@
+     private DeviceDisplayImpl impl;    
+     private DisplayAnimator anim;     
+     private javax.swing.Timer m_tTimeTimer;    
++    private javax.swing.Timer cae_IdleTimer;  
+     private int counter = 0;
+     
+     /** Creates a new instance of DeviceDisplayBase */
+@@ -44,10 +50,17 @@
+         this.impl = impl; 
+         anim = new NullAnimator("", "");
+         m_tTimeTimer = new javax.swing.Timer(50, new PrintTimeAction());
++        
++        // 30s refresh
++        cae_IdleTimer = new javax.swing.Timer(30 * 1000, new WriteTimeTask());
++        
++        // 600s initial delay after display shows something
++        cae_IdleTimer.setInitialDelay(600 * 1000);
+     }
+     
+     public void writeVisor(int animation, String sLine1, String sLine2) {
+         
++        cae_IdleTimer.stop();
+         m_tTimeTimer.stop();
+         switch (animation) {
+             case ANIMATION_FLYER:
+@@ -75,6 +88,24 @@
+             counter = 0;
+             m_tTimeTimer.start();
+         }
++        
++        /* idle timer to display brand & time after inactivity */
++        cae_IdleTimer.start();
++    }
++    
++    private class WriteTimeTask implements ActionListener {
++        @Override
++        public void actionPerformed(ActionEvent e) {
++            String l1 = "Stitch Solihull";
++            
++            DateFormat df = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
++            Date today = Calendar.getInstance().getTime();
++            String l2 = df.format(today);
++            
++            // do not call writeVisor, it will reset cae_IdleTimer
++            anim = new NullAnimator(l1, l2);
++            impl.repaintLines();
++        }
+     }
+          
+     public void writeVisor(String sLine1, String sLine2) {

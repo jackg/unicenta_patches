@@ -1,0 +1,68 @@
+diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/printer/DevicePrinterPrinter.java unicenta_302_source/src-pos/com/openbravo/pos/printer/printer/DevicePrinterPrinter.java
+--- unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/printer/DevicePrinterPrinter.java	2012-05-19 07:30:04.000000000 +0100
++++ unicenta_302_source/src-pos/com/openbravo/pos/printer/printer/DevicePrinterPrinter.java	2013-03-09 01:32:48.000000000 +0000
+@@ -30,6 +30,9 @@
+ import java.awt.Component;
+ import java.awt.Toolkit;
+ import java.awt.image.BufferedImage;
++import java.io.FileInputStream;
++import java.io.FileNotFoundException;
++import java.io.IOException;
+ import java.util.HashMap;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+@@ -262,8 +265,53 @@
+      */
+     @Override
+     public void openDrawer() {
++
++        try {
++
++            PrintService ps;
++
++            if (printservice == null) {
++                String[] printers = ReportUtils.getPrintNames();
++                if (printers.length == 0) {
++                    logger.warning(AppLocal.getIntString("message.noprinters"));
++                    ps = null;
++                } else {
++                    SelectPrinter selectprinter = SelectPrinter.getSelectPrinter(parent, printers);
++                    selectprinter.setVisible(true);
++                    if (selectprinter.isOK()) {
++                        ps = ReportUtils.getPrintService(selectprinter.getPrintService());
++                    } else {
++                        ps = null;
++                    }
++                }
++            } else {
++                ps = printservice;
++            }
++
++            if (ps != null) {
++                FileInputStream fin;
++                Doc d;
++                try {
++                    fin = new FileInputStream("C:\\testfile");
++                    DocFlavor df = DocFlavor.INPUT_STREAM.AUTOSENSE;
++                    d = new SimpleDoc(fin, df, null);
++                    DocPrintJob job = ps.createPrintJob();
++                    job.print(d, null);
++                    fin.close();
++                } catch (FileNotFoundException ex) {
++                    logger.log(Level.WARNING, "file not found");
++                } catch (IOException ex) {
++                    logger.log(Level.WARNING, "ioexception");
++                }
++            }
++
++        } catch (PrintException ex) {
++            logger.log(Level.WARNING, AppLocal.getIntString("message.printererror"), ex);
++            JMessageDialog.showMessage(parent, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.printererror"), ex));
++        }
++
+         // Una simulacion
+-        Toolkit.getDefaultToolkit().beep();
++       // Toolkit.getDefaultToolkit().beep();
+     }
+ 
+     private static MediaSizeName getMedia(String mediasizename) {
