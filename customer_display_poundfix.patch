@@ -1,0 +1,14 @@
+diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java unicenta_302_source/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java
+--- unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java	2012-05-19 07:04:48.000000000 +0100
++++ unicenta_302_source/src-pos/com/openbravo/pos/printer/DeviceDisplayBase.java	2013-03-09 04:02:18.000000000 +0000
+@@ -48,6 +48,10 @@
+     
+     public void writeVisor(int animation, String sLine1, String sLine2) {
+         
++        /* Glancetron 8035 £ fix, seems to use a mangled codepage? */
++        sLine1 = sLine1.replace("£", "Ñ");        
++        sLine2 = sLine2.replace("£", "Ñ");
++        
+         m_tTimeTimer.stop();
+         switch (animation) {
+             case ANIMATION_FLYER:
