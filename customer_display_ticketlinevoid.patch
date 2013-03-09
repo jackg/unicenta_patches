@@ -1,0 +1,42 @@
+diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/sales/JPanelTicket.java unicenta_302_source/src-pos/com/openbravo/pos/sales/JPanelTicket.java
+--- unicenta_302_source.orig/src-pos/com/openbravo/pos/sales/JPanelTicket.java	2012-11-14 09:05:12.000000000 +0000
++++ unicenta_302_source/src-pos/com/openbravo/pos/sales/JPanelTicket.java	2013-03-09 04:52:49.000000000 +0000
+@@ -395,6 +395,8 @@
+         
+         if (executeEventAndRefresh("ticket.removeline", new ScriptArg("index", i)) == null) {
+         
++            visorTicketLineVoid(m_oTicket.getLine(i)); // borro el visor 
++
+             if (m_oTicket.getLine(i).isProductCom()) {
+                 // Es un producto auxiliar, lo borro y santas pascuas.
+                 m_oTicket.removeLine(i);
+@@ -410,7 +412,6 @@
+                 }
+             }
+ 
+-            visorTicketLine(null); // borro el visor 
+             printPartialTotals(); // pinto los totales parciales...                           
+             stateToZero(); // Pongo a cero    
+ 
+@@ -1006,6 +1007,22 @@
+         } 
+     }    
+     
++        private void visorTicketLineVoid(TicketLineInfo oLine){
++        if (oLine == null) { 
++             m_App.getDeviceTicket().getDeviceDisplay().clearVisor();
++        } else {                 
++            try {
++                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
++                script.put("ticketline", oLine);
++                m_TTP.printTicket(script.eval(dlSystem.getResourceAsXML("Printer.TicketLineVoid")).toString());
++// JG May 2012 replaced with Multicatch
++            } catch (    ScriptException | TicketPrinterException e) {
++                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintline"), e);
++                msg.show(JPanelTicket.this);
++            }
++        } 
++    }    
++
+     
+     private Object evalScript(ScriptObject scr, String resource, ScriptArg... args) {
