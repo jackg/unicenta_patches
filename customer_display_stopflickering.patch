@@ -1,0 +1,15 @@
+diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/escpos/DeviceDisplayESCPOS.java unicenta_302_source/src-pos/com/openbravo/pos/printer/escpos/DeviceDisplayESCPOS.java
+--- unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/escpos/DeviceDisplayESCPOS.java	2012-05-19 07:20:32.000000000 +0100
++++ unicenta_302_source/src-pos/com/openbravo/pos/printer/escpos/DeviceDisplayESCPOS.java	2013-03-13 01:24:27.000000000 +0000
+@@ -54,7 +54,10 @@
+     public void repaintLines() {
+         
+         display.write(ESCPOS.SELECT_DISPLAY);
+-        display.write(ESCPOS.VISOR_CLEAR);
++        // CAE
++        // clearing the display before repainting it causes nasty flickering
++        // disabling it seems to cause no unwanted side-effects and looks much better
++        //display.write(ESCPOS.VISOR_CLEAR);
+         display.write(ESCPOS.VISOR_HOME);
+         display.write(trans.transString(DeviceTicket.alignLeft(m_displaylines.getLine1(), 20)));
+         display.write(trans.transString(DeviceTicket.alignLeft(m_displaylines.getLine2(), 20)));        
