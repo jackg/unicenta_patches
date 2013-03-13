@@ -42,7 +42,7 @@ diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/printer/De
 +                FileInputStream fin;
 +                Doc d;
 +                try {
-+                    fin = new FileInputStream("C:\\testfile");
++                    fin = new FileInputStream("C:\\Chris\tm20_opendrawer");
 +                    DocFlavor df = DocFlavor.INPUT_STREAM.AUTOSENSE;
 +                    d = new SimpleDoc(fin, df, null);
 +                    DocPrintJob job = ps.createPrintJob();
