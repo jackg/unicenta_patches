@@ -26,8 +26,8 @@ diff -Bwur unicenta_302_source.orig/src-pos/com/openbravo/pos/printer/DeviceDisp
          anim = new NullAnimator("", "");
          m_tTimeTimer = new javax.swing.Timer(50, new PrintTimeAction());
 +        
-+        // 30s refresh
-+        cae_IdleTimer = new javax.swing.Timer(30 * 1000, new WriteTimeTask());
++        // 2s refresh
++        cae_IdleTimer = new javax.swing.Timer(2 * 1000, new WriteTimeTask());
 +        
 +        // 600s initial delay after display shows something
 +        cae_IdleTimer.setInitialDelay(600 * 1000);
